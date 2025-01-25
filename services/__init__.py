@@ -3,7 +3,9 @@
 from .localization import MESSAGES
 from fastapi import FastAPI
 #from .state import router as router_states
+from .database import init_db
 
+from .helpers import *
 __all__ = [
     #"OpenAI",
   #  "Database",

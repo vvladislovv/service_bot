@@ -12,9 +12,9 @@ from config.config import settings
 
 from hanlers.common import router as common_router
 from sandbox.admins_panel import router_admin
-
+from services.database import init_db
 # Импортируем библиотеку httpx
-import httpx
+#import httpx
 
 async def routers(dp, bot):
     routers = [
@@ -29,7 +29,7 @@ async def routers(dp, bot):
 # Start main
 async def main() -> None:
 
-   # await init_db()
+    await init_db()
    # await init_db_globual() #  globul data
 
     try:
@@ -46,18 +46,10 @@ async def main() -> None:
         await routers(dp, bot)
 
         # Вызов функции send_message после инициализации бота
-        await send_message()
     finally:
         # Закрываем сессию бота при завершении
         await bot.session.close()
 
-async def send_message():
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://localhost:8000/send-message",
-            json={"user_id": 123, "message": "Привет, это тестовое сообщение!"}
-        )
-        print(response.json())
 
 if __name__ == "__main__":
     try:

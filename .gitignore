@@ -1,0 +1,5 @@
+# Start Generation Here
+.env
+venv/
+sandbox/db/
+

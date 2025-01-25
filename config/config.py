@@ -1,18 +1,9 @@
-from datetime import datetime
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from environs import Env
 
 @dataclass
 class Admins:
     admins: list[int] 
-
-@dataclass
-class DatabaseConfig:
-    dbname: str = 'users_database'
-    user: str = 'postgres'
-    password: str = 'admin'
-    host: str = 'localhost'
-    port: int = 5433
 
 @dataclass
 class OpenAIConfig:
@@ -23,8 +14,9 @@ class OpenAIConfig:
 class Config:
     bot_token: str
     openai: OpenAIConfig
-    database: DatabaseConfig  
+
     admins: Admins
+    DATABASE_URL: str 
 
 @dataclass
 class Settings:
@@ -41,13 +33,8 @@ def get_settings(path: str = None):
             admins=Admins(
                 admins=env.list("ADMINS")
             ),
-            database=DatabaseConfig(
-                dbname=env.str("DB_NAME"),
-                user=env.str("DB_USER"),
-                password=env.str("DB_PASSWORD"),
-                host=env.str("DB_HOST"),
-                port=env.int("DB_PORT")
-            ),
+            DATABASE_URL=env.str("DATABASE_URL"),
+
             openai=OpenAIConfig(
                 api_key=env.str("PROXY_API_KEY")
             )

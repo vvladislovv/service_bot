@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List
 import datetime
 import aiohttp
 from config.config import settings  # Импортируем настройки для получения токена
@@ -29,21 +29,6 @@ async def get_session():
         session = aiohttp.ClientSession()
     return session
 
-async def send_message(chat_id: int, message: str) -> None:
-    try:
-        session = await get_session()
-        async with session.post(
-            f'https://api.telegram.org/bot{settings.config.bot_token}/sendMessage',
-            json={
-                'chat_id': chat_id,
-                'text': message
-            }
-        ) as response:
-            if response.status != 200:
-                logging.error(f"Failed to send message: {await response.text()}")
-    except Exception as e:
-        logging.error(f"Error sending message: {str(e)}")
-        
 
 async def run_fastapi():
     import uvicorn
@@ -85,12 +70,10 @@ async def get_api_history():
 
 # Отправка сообщения пользователю
 @app.post("/send-message")
-async def send_message_endpoint(message: Message):
+async def send_message_endpoint(message):
     if message.user_id not in users:
         raise HTTPException(status_code=404, detail="User not found")
     
-    user = users[message.user_id]
-    await send_message(user.chat_id, message.message)
     
     return {"status": "success", "message": "Message sent"}
 
