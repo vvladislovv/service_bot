@@ -6,7 +6,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 Base = declarative_base()
@@ -44,24 +44,14 @@ async_session = sessionmaker(
 # Database initialization
 async def init_db(): 
     db_dir = os.path.dirname(settings.config.DATABASE_URL.replace('sqlite:///', ''))
-    if db_dir and not os.path.exists(db_dir):
+    if db_dir and not os.path.exists(db_dir) and 'sandbox/db' not in db_dir:
         os.makedirs(db_dir)
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-# Get database session
-async def get_db():
-    async with async_session() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
-
-
 @asynccontextmanager
 async def create_session() -> AsyncGenerator[AsyncSession, None]:
-    """Creates an asynchronous database session"""
     async with async_session() as session:
         try:
             yield session

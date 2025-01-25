@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка сообщения в Telegram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Отправка сообщения в Telegram</h1>
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="chatId">ID чата:</label>
+                <input type="number" id="chatId" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Сообщение:</label>
+                <textarea id="message" required></textarea>
+            </div>
+            <button type="submit">Отправить</button>
+        </form>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const chatId = document.getElementById('chatId').value;
+            const message = document.getElementById('message').value;
+            const statusDiv = document.getElementById('status');
+
+            try {
+                const response = await fetch('/message_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: parseInt(chatId),
+                        message: message
+                    })
+                });
+
+                const data = await response.json();
+                statusDiv.style.display = 'block';
+                
+                if (data.status === 'success') {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = data.message;
+                    document.getElementById('messageForm').reset();
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = data.message;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте позже.';
+            }
+        });
+    </script>
+</body>
+</html> 

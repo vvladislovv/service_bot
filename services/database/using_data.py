@@ -1,13 +1,13 @@
 import json
 from .settings_data import User, Message, create_session
 from sqlalchemy import select
-from typing import List, Optional, Union
+from typing import List, Optional
 from services import logs, convert_to_json
 
-async def get_users(user_id_telegram: int) -> List[User]: 
+async def get_all_users() -> List[User]: 
     async with create_session() as session:
         try:
-            stmt = select(User).where(User.user_id == user_id_telegram)
+            stmt = select(User)
             result = await session.execute(stmt)
             return result.scalars().all()
         except Exception as e:
@@ -26,7 +26,7 @@ async def get_user_by_id(json_data: str) -> Optional[User]:
             await logs.logs_bot("error", f"Error getting user: {str(e)}")
             return None
 
-async def check_existing_user( user_id: int):
+async def check_existing_user(user_id: int):
     async with create_session() as session:
         try:
             stmt = select(User).where(User.user_id == user_id)

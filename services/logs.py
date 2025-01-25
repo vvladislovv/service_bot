@@ -12,7 +12,7 @@ async def setup_logging():
 
     logger.add(sys.stdout, format=format_record)
     
-    # Create logs directory if it doesn't exist
+
     os.makedirs("sandbox/logs_files", exist_ok=True)
     
     log_levels = ["DEBUG", "INFO", "WARNING", "ERROR"]
@@ -26,7 +26,6 @@ async def setup_logging():
             filter=lambda record, level=level: record["level"].name == level
         )
 
-#setup_logging()
 
 async def logs_bot(TypeLog: str, Text: str) -> None:
     await setup_logging()

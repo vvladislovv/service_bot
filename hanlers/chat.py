@@ -38,3 +38,19 @@ async def update_message(message : Message, text : str, keyword : InlineKeyboard
         )
     except Exception as error:
         await logs.logs_bot("error", f"Error in update_message: {error}")
+
+
+async def send_telegram_message(chat_id: int, text: str) -> None:
+    try:
+        from aiogram import Bot
+        from config.config import settings
+
+        bot = Bot(token=settings.config.bot_token)
+        await bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            parse_mode="Markdown"
+        )
+        await bot.session.close()
+    except Exception as error:
+        await logs.logs_bot("error", f"Error sending telegram message: {error}")

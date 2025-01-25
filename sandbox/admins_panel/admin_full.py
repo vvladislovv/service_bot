@@ -4,7 +4,7 @@ from aiogram import Router
 from aiogram import types
 from services import MESSAGES
 from hanlers import chat
-from services import logs
+
 import os
 
 router = Router(name=__name__)
